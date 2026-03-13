@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../storage/lexicon_storage.dart';
 import '../theme/app_theme.dart';
 import '../widgets/lexicon_item.dart';
+import '../widgets/app_footer.dart';
 
 class LexiconScreen extends StatefulWidget {
   final Function(String) onWordSelect;
@@ -77,9 +78,9 @@ class LexiconScreenState extends State<LexiconScreen> {
                   ),
                   if (_entries.isNotEmpty)
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.delete_outline_rounded,
-                        color: AppTheme.iconColor,
+                        color: Theme.of(context).disabledColor,
                       ),
                       onPressed: _clearAll,
                     ),
@@ -103,7 +104,7 @@ class LexiconScreenState extends State<LexiconScreen> {
                         '${_entries.length} ${_entries.length == 1 ? 'word' : 'words'}',
                         key: ValueKey(_entries.length),
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: AppTheme.mutedColor,
+                              color: Theme.of(context).hintColor,
                               letterSpacing: 0.6,
                             ),
                       ),
@@ -114,7 +115,7 @@ class LexiconScreenState extends State<LexiconScreen> {
                       Text(
                         _milestoneLabel,
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: AppTheme.secondaryTextColor.withAlpha(120),
+                              color: Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(120),
                               fontSize: 11,
                               fontStyle: FontStyle.italic,
                             ),
@@ -169,30 +170,7 @@ class LexiconScreenState extends State<LexiconScreen> {
 
           // ── Footer ─────────────────────────────────────────────────
           const SliverToBoxAdapter(child: SizedBox(height: 60)),
-          SliverToBoxAdapter(
-            child: Opacity(
-              opacity: 0.2,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 40.0),
-                child: Column(
-                  children: [
-                    Text(
-                      '© ${DateTime.now().year} Aviraj Saha',
-                      style: Theme.of(context).textTheme.labelMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'aviraj.saha@outlook.com',
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelMedium
-                          ?.copyWith(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          const SliverToBoxAdapter(child: AppFooter()),
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),

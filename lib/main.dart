@@ -1,31 +1,76 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/lookup_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/lexicon_screen.dart';
 import 'screens/tongue_twisters_screen.dart';
 import 'theme/app_theme.dart';
+import 'widgets/theme_toggle.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const LexiconApp());
 }
 
-class LexiconApp extends StatelessWidget {
+class LexiconApp extends StatefulWidget {
   const LexiconApp({super.key});
+
+  @override
+  State<LexiconApp> createState() => _LexiconAppState();
+}
+
+class _LexiconAppState extends State<LexiconApp> {
+  ThemeMode _themeMode = ThemeMode.dark;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTheme();
+  }
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLight = prefs.getBool('is_light_mode') ?? false;
+    setState(() {
+      _themeMode = isLight ? ThemeMode.light : ThemeMode.dark;
+    });
+  }
+
+  Future<void> _toggleTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _themeMode =
+          _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+      prefs.setBool('is_light_mode', _themeMode == ThemeMode.light);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Lexicon',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      home: const MainScaffold(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: _themeMode,
+      home: MainScaffold(
+        themeMode: _themeMode,
+        onThemeToggle: _toggleTheme,
+      ),
     );
   }
 }
 
 class MainScaffold extends StatefulWidget {
-  const MainScaffold({super.key});
+  final ThemeMode themeMode;
+  final VoidCallback onThemeToggle;
+
+  const MainScaffold({
+    super.key,
+    required this.themeMode,
+    required this.onThemeToggle,
+  });
 
   @override
   State<MainScaffold> createState() => _MainScaffoldState();
@@ -79,6 +124,8 @@ class _MainScaffoldState extends State<MainScaffold>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = widget.themeMode == ThemeMode.dark;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -90,6 +137,10 @@ class _MainScaffoldState extends State<MainScaffold>
               children: [
                 LookupScreen(
                   initialWord: _selectedHistoryWord,
+                  themeToggle: ThemeToggle(
+                    isDark: isDark,
+                    onToggle: widget.onThemeToggle,
+                  ),
                   onHistoryUpdated: () {
                     _historyKey.currentState?.loadHistory();
                   },
@@ -135,6 +186,7 @@ class _MainScaffoldState extends State<MainScaffold>
               child: _FloatingNavPill(
                 currentIndex: _currentIndex,
                 onTap: _switchTab,
+                isDark: isDark,
               ),
             ),
           ),
@@ -149,17 +201,35 @@ class _MainScaffoldState extends State<MainScaffold>
 class _FloatingNavPill extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
+  final bool isDark;
 
   const _FloatingNavPill({
     required this.currentIndex,
     required this.onTap,
+    required this.isDark,
   });
 
   static const _items = [
-    (icon: Icons.search_rounded, altIcon: Icons.search_rounded, label: 'Lookup'),
-    (icon: Icons.history_rounded, altIcon: Icons.history_rounded, label: 'History'),
-    (icon: Icons.bookmark_border_rounded, altIcon: Icons.bookmark_rounded, label: 'Lexicon'),
-    (icon: Icons.auto_stories_outlined, altIcon: Icons.auto_stories_rounded, label: 'Twisters'),
+    (
+      icon: Icons.search_rounded,
+      altIcon: Icons.search_rounded,
+      label: 'Lookup'
+    ),
+    (
+      icon: Icons.history_rounded,
+      altIcon: Icons.history_rounded,
+      label: 'History'
+    ),
+    (
+      icon: Icons.bookmark_border_rounded,
+      altIcon: Icons.bookmark_rounded,
+      label: 'Lexicon'
+    ),
+    (
+      icon: Icons.auto_stories_outlined,
+      altIcon: Icons.auto_stories_rounded,
+      label: 'Twisters'
+    ),
   ];
 
   @override
@@ -171,11 +241,14 @@ class _FloatingNavPill extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           decoration: BoxDecoration(
-            // Very dark frosted glass feel
-            color: AppTheme.surfaceColor.withAlpha(210),
+            color: isDark
+                ? AppTheme.surfaceColor.withAlpha(210)
+                : AppTheme.lightSurfaceColor.withAlpha(210),
             borderRadius: BorderRadius.circular(40),
             border: Border.all(
-              color: Colors.white.withAlpha(10),
+              color: isDark
+                  ? Colors.white.withAlpha(10)
+                  : Colors.black.withAlpha(10),
               width: 0.5,
             ),
           ),
@@ -188,6 +261,7 @@ class _FloatingNavPill extends StatelessWidget {
                 icon: isActive ? item.altIcon : item.icon,
                 label: item.label,
                 isActive: isActive,
+                isDark: isDark,
                 onTap: () => onTap(i),
               );
             }),
@@ -202,12 +276,14 @@ class _NavIcon extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isActive;
+  final bool isDark;
   final VoidCallback onTap;
 
   const _NavIcon({
     required this.icon,
     required this.label,
     required this.isActive,
+    required this.isDark,
     required this.onTap,
   });
 
@@ -224,7 +300,7 @@ class _NavIcon extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 2),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.white.withAlpha(14)
+              ? (isDark ? Colors.white.withAlpha(14) : Colors.black.withAlpha(14))
               : Colors.transparent,
           borderRadius: BorderRadius.circular(32),
         ),
@@ -236,8 +312,8 @@ class _NavIcon extends StatelessWidget {
               key: ValueKey(isActive),
               size: 22,
               color: isActive
-                  ? AppTheme.accentColor
-                  : AppTheme.iconColor,
+                  ? (isDark ? AppTheme.accentColor : AppTheme.lightPrimaryText)
+                  : (isDark ? AppTheme.iconColor : AppTheme.lightMutedColor),
             ),
           ),
         ),

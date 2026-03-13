@@ -8,12 +8,14 @@ import '../theme/app_theme.dart';
 
 class LookupScreen extends StatefulWidget {
   final String? initialWord;
+  final Widget? themeToggle;
   final VoidCallback? onHistoryUpdated;
   final VoidCallback? onLexiconUpdated;
 
   const LookupScreen({
     super.key,
     this.initialWord,
+    this.themeToggle,
     this.onHistoryUpdated,
     this.onLexiconUpdated,
   });
@@ -150,6 +152,14 @@ class _LookupScreenState extends State<LookupScreen>
               ),
             ),
           ),
+
+          // ── Theme Toggle ──────────────────────────────────────────
+          if (widget.themeToggle != null)
+            Positioned(
+              top: 48,
+              right: 24,
+              child: widget.themeToggle!,
+            ),
         ],
       ),
     );
@@ -157,9 +167,13 @@ class _LookupScreenState extends State<LookupScreen>
 
   Widget _buildResult() {
     if (_isLoading) {
-      return const Padding(
-        padding: EdgeInsets.only(top: 40.0),
-        child: Center(child: CircularProgressIndicator(color: Colors.white10)),
+      return Padding(
+        padding: const EdgeInsets.only(top: 40.0),
+        child: Center(
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary.withAlpha(50),
+          ),
+        ),
       );
     }
 
@@ -211,15 +225,16 @@ class _LookupScreenState extends State<LookupScreen>
         children: [
           Text(
             'Lexicon',
-            style: Theme.of(context)
-                .textTheme
-                .headlineLarge
-                ?.copyWith(color: Colors.white),
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Your reading companion',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onBackground.withAlpha(150),
+                ),
           ),
         ],
       ),

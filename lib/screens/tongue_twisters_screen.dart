@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/tongue_twisters.dart';
 import '../widgets/twister_quote.dart';
+import '../widgets/app_footer.dart';
 
 class TongueTwistersScreen extends StatelessWidget {
   const TongueTwistersScreen({super.key});
@@ -10,8 +11,8 @@ class TongueTwistersScreen extends StatelessWidget {
     return Scaffold(
       body: ListView.builder(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(32, 100, 32, 100),
-        itemCount: tongueTwisters.length,
+        padding: const EdgeInsets.fromLTRB(32, 100, 32, 40),
+        itemCount: tongueTwisters.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Column(
@@ -31,7 +32,17 @@ class TongueTwistersScreen extends StatelessWidget {
               ],
             );
           }
-          return TwisterQuote(text: tongueTwisters[index]);
+          if (index < tongueTwisters.length) {
+            return TwisterQuote(text: tongueTwisters[index]);
+          }
+          
+          return const Column(
+            children: [
+              SizedBox(height: 60),
+              AppFooter(),
+              SizedBox(height: 40),
+            ],
+          );
         },
       ),
     );

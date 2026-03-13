@@ -137,8 +137,8 @@ class _WordDisplayState extends State<WordDisplay>
                           ? Icons.bookmark_rounded
                           : Icons.bookmark_border_rounded,
                       color: _isSaved
-                          ? AppTheme.accentColor.withAlpha(200)
-                          : AppTheme.iconColor,
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).disabledColor,
                       size: 24,
                     ),
                     onPressed: _toggleLexicon,
@@ -152,8 +152,9 @@ class _WordDisplayState extends State<WordDisplay>
                       _isPlaying
                           ? Icons.volume_up_rounded
                           : Icons.volume_up_outlined,
-                      color:
-                          _isPlaying ? AppTheme.accentColor : AppTheme.iconColor,
+                      color: _isPlaying
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).disabledColor,
                       size: 26,
                     ),
                     onPressed: _playAudio,
@@ -289,10 +290,10 @@ class _WordDisplayState extends State<WordDisplay>
               child: Text(
                 word,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.accentColor.withAlpha(180),
+                      color: Theme.of(context).colorScheme.primary.withAlpha(180),
                       fontWeight: FontWeight.w500,
                       decoration: TextDecoration.underline,
-                      decorationColor: AppTheme.accentColor.withAlpha(60),
+                      decorationColor: Theme.of(context).colorScheme.primary.withAlpha(60),
                     ),
               ),
             ),
@@ -319,13 +320,14 @@ class _WordDisplayState extends State<WordDisplay>
           Text(
             'See more on Google',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.accentColor.withAlpha(100),
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(120),
                   fontWeight: FontWeight.w500,
                 ),
           ),
           const SizedBox(width: 4),
           Icon(Icons.arrow_forward_rounded,
-              size: 14, color: AppTheme.accentColor.withAlpha(100)),
+              size: 14, 
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(120)),
         ],
       ),
     );

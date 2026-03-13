@@ -61,11 +61,13 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
     return Container(
       height: 64,
       decoration: BoxDecoration(
-        color: AppTheme.surfaceColor,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(20),
+            color: Theme.of(context).brightness == Brightness.dark 
+                ? Colors.black.withAlpha(40) 
+                : Colors.black.withAlpha(15),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -83,7 +85,9 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
         decoration: InputDecoration(
           hintText: _isListening ? "Listening..." : widget.hint,
           hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: _isListening ? Colors.redAccent.withAlpha(150) : AppTheme.mutedColor,
+            color: _isListening 
+                ? Colors.redAccent.withAlpha(150) 
+                : Theme.of(context).hintColor,
             fontWeight: FontWeight.w500,
           ),
           border: InputBorder.none,
@@ -98,7 +102,11 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
           ),
           suffixIcon: widget.controller.text.isNotEmpty 
             ? IconButton(
-                icon: const Icon(Icons.close_rounded, color: AppTheme.iconColor, size: 20),
+                icon: Icon(
+                  Icons.close_rounded, 
+                  color: Theme.of(context).disabledColor, 
+                  size: 20
+                ),
                 onPressed: () {
                   widget.controller.clear();
                   setState(() {});

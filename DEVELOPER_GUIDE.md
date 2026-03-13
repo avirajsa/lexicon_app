@@ -1,6 +1,6 @@
 # Lexicon — Developer Guide
 
-**Version:** 1.2.0+3  
+**Version:** 1.3.0+4  
 **Developer:** Aviraj Saha (aviraj.saha@outlook.com)
 
 ---
@@ -37,10 +37,10 @@ flutter build appbundle --release
 
 ```
 lib/
-├── main.dart               # App entry, MainScaffold, floating nav pill
+├── main.dart               # App entry, MainScaffold, floating nav pill, theme state
 │
 ├── screens/
-│   ├── lookup_screen.dart      # Search + animated result display
+│   ├── lookup_screen.dart      # Search + animated result display + theme toggle
 │   ├── history_screen.dart     # Swipe-to-delete history list
 │   ├── lexicon_screen.dart     # Personal saved words + progress
 │   ├── tongue_twisters_screen.dart
@@ -51,6 +51,8 @@ lib/
 │   ├── floating_search_bar.dart  # Pill-shaped search + voice input
 │   ├── history_item.dart       # Dismissible history row
 │   ├── lexicon_item.dart       # Dismissible lexicon row (word + def + date)
+│   ├── theme_toggle.dart       # Custom animated sun/moon switch
+│   ├── app_footer.dart         # Reusable footer with social links
 │   ├── definition_card.dart    # Legacy widget
 │   ├── twister_quote.dart      # Tongue twister display
 │   └── twister_card.dart       # Legacy twister card
@@ -66,7 +68,7 @@ lib/
 │   └── tongue_twisters.dart   # Static list of tongue twisters
 │
 └── theme/
-    └── app_theme.dart         # Color palette, typography, ThemeData
+    └── app_theme.dart         # Color palette, typography, Dark & Light (Reader) themes
 ```
 
 ---
@@ -76,11 +78,12 @@ lib/
 Simple flat architecture with `setState` throughout. No external state manager.
 
 ```
-MainScaffold (GlobalKeys)
-  ├── LookupScreen     → DictionaryApiService, HistoryStorage, LexiconStorage
-  ├── HistoryScreen    → HistoryStorage
-  ├── LexiconScreen    → LexiconStorage
-  └── TongueTwistersScreen
+LexiconApp (ThemeMode State)
+  └── MainScaffold (GlobalKeys)
+      ├── LookupScreen     → DictionaryApiService, HistoryStorage, LexiconStorage
+      ├── HistoryScreen    → HistoryStorage
+      ├── LexiconScreen    → LexiconStorage
+      └── TongueTwistersScreen
 ```
 
 **Cross-screen refresh pattern:** `GlobalKey<HistoryScreenState>` and `GlobalKey<LexiconScreenState>` held in `_MainScaffoldState` allow imperative `loadHistory()` / `loadLexicon()` calls without rebuilding the entire tree.
@@ -99,6 +102,35 @@ MainScaffold (GlobalKeys)
 
 ---
 
+## Theme System & Persistence
+
+Lexicon supports a smooth transition between Dark Mode and **Reader Mode** (Light Theme).
+
+**File:** `lib/theme/app_theme.dart`  
+**Light Theme Colors:**
+- Background: `#F4E9D8` (Warm Paper)
+- Surface: `#EAD9C4` (Parchment)
+- Primary Text: `#1C1A18`
+- Secondary Text: `#5A4632`
+
+**Persistence:**  
+Managed in `_LexiconAppState` (`main.dart`).  
+Key: `'is_light_mode'` (bool) in `shared_preferences`.  
+Theme switching is animated via `MaterialApp.themeMode`.
+
+**Toggle Widget:** `widgets/theme_toggle.dart`  
+Uses `AnimatedAlign` and `AnimatedSwitcher` to move the sun/moon icon and change colors.
+
+---
+
+## Social Links Footer
+
+**Widget:** `widgets/app_footer.dart`  
+Centralized footer used in `HistoryScreen` and `LexiconScreen`.  
+Includes `url_launcher` links to X, LinkedIn, GitHub, and Instagram.
+
+---
+
 ## Lexicon Storage System
 
 **File:** `lib/storage/lexicon_storage.dart`  
@@ -113,16 +145,6 @@ class LexiconEntry {
 }
 ```
 
-**Methods:**
-
-| Method | Description |
-|---|---|
-| `getAll()` | Returns all entries, most-recent first |
-| `contains(word)` | Checks if a word is already saved |
-| `addWord(word, definition)` | Inserts at top; deduplicates by word |
-| `removeWord(word)` | Removes by word (case-insensitive) |
-| `clearAll()` | Drops the entire list |
-
 ---
 
 ## History Storage System
@@ -130,12 +152,6 @@ class LexiconEntry {
 **File:** `lib/storage/history_storage.dart`  
 **Key:** `'search_history'`  
 **Max entries:** 10
-
-**Methods (v1.2 additions):**
-
-| Method | Description |
-|---|---|
-| `removeWord(word)` | Removes a single entry individually |
 
 History is saved **before** the API call fires (`lookup_screen.dart`), so the History tab reflects searches instantly via `GlobalKey`.
 
@@ -160,11 +176,7 @@ Uses `AnimationController` with `SingleTickerProviderStateMixin`:
 
 ### 4. Swipe-to-delete collapse (`history_item.dart`, `lexicon_item.dart`)
 
-`Dismissible` handles the swipe gesture and built-in removal animation. No manual `AnimationController` needed — Flutter handles the collapse automatically.
-
-### 5. Bookmark icon swap (`word_display.dart`)
-
-`AnimatedSwitcher` wraps the `Icon` widget, keyed to `_isSaved`, producing a smooth crossfade between bookmark states.
+`Dismissible` handles the swipe gesture and built-in removal animation.
 
 ---
 
@@ -172,18 +184,7 @@ Uses `AnimationController` with `SingleTickerProviderStateMixin`:
 
 **File:** `lib/screens/lexicon_screen.dart`
 
-Milestone logic is pure Dart, no storage needed:
-```dart
-String get _milestoneLabel {
-  final n = _entries.length;
-  if (n >= 100) return '100 word milestone reached';
-  if (n >= 50)  return '50 word milestone reached';
-  if (n >= 25)  return '25 word milestone reached';
-  return '';
-}
-```
-
-Word count is shown via `AnimatedSwitcher` so the number crossfades when it changes.
+Milestone logic tracks word counts at 25, 50, and 100 words.
 
 ---
 
@@ -191,55 +192,24 @@ Word count is shown via `AnimatedSwitcher` so the number crossfades when it chan
 
 **Endpoint:** `GET https://api.dictionaryapi.dev/api/v2/entries/en/{word}`
 
-**Model hierarchy:**
-- `DictionaryEntry` — word, phonetic, audio, origin, `List<WordMeaning>`
-- `WordMeaning` — partOfSpeech, `List<WordDefinition>`, synonyms
-- `WordDefinition` — definition, example
-
-To swap the API: update `_baseUrl` in `DictionaryApiService` and adjust `fromJson` factories.
-
 ---
 
 ## Theme & Design System
 
-| Token | Color | Purpose |
+| Dark Mode Token | Color | Purpose |
 |---|---|---|
 | `backgroundColor` | `#0F0F10` | Scaffold background |
-| `surfaceColor` | `#1A1A1C` | Search bar, pill nav |
-| `accentColor` | `#F5F5F7` | Primary text, active icons |
+| `surfaceColor` | `#1A1A1C` | Pill nav |
+| `accentColor` | `#F5F5F7` | Primary text |
 | `secondaryTextColor` | `#86868B` | Subtitles |
-| `mutedColor` | `#4A4A4F` | Labels, dividers |
-| `iconColor` | `#5C5C62` | Inactive icons |
 
-Typography: **Inter** via `google_fonts`. Generous spacing, no boxed cards in main flows.
+| Light Mode Token | Color | Purpose |
+|---|---|---|
+| `lightBackgroundColor`| `#F4E9D8` | Warm paper background |
+| `lightSurfaceColor` | `#EAD9C4` | Parchment surface |
+| `lightPrimaryText` | `#1C1A18` | Dark charcoal text |
 
----
-
-## Adding New Features
-
-### New Tab
-1. Create screen in `lib/screens/`
-2. Add `GlobalKey<YourScreenState>` in `_MainScaffoldState`
-3. Add to `IndexedStack` children
-4. Add `_NavIcon` entry in `_FloatingNavPill._items`
-
-### New Storage Field
-1. Add field to the relevant `*Entry` class
-2. Update `toJson` / `fromJson`
-3. Existing stored data degrades gracefully (null-safe parsing)
-
----
-
-## Dependencies
-
-| Package | Purpose |
-|---|---|
-| `http` | Dictionary API calls |
-| `google_fonts` | Inter typeface |
-| `url_launcher` | Open Google/browser links |
-| `shared_preferences` | History + Lexicon local storage |
-| `speech_to_text` | Voice search input |
-| `audioplayers` | Pronunciation audio playback |
+Typography: **Inter** via `google_fonts`.
 
 ---
 
@@ -248,6 +218,6 @@ Typography: **Inter** via `google_fonts`. Generous spacing, no boxed cards in ma
 | Property | Value |
 |---|---|
 | App Name | Lexicon |
-| Version | 1.2.0+3 |
-| Keywords | dictionary, vocabulary, word lookup, minimal, reading companion, personal lexicon |
-| Short Description | Minimal dictionary & vocabulary tool with personal word saving |
+| Version | 1.3.0+4 |
+| Keywords | dictionary, vocabulary, word lookup, minimal, reader mode, paper theme |
+| Short Description | Minimal dictionary tool with warm reader mode and personal lexicon |

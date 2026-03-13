@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../storage/history_storage.dart';
 import '../theme/app_theme.dart';
 import '../widgets/history_item.dart';
+import '../widgets/app_footer.dart';
 
 class HistoryScreen extends StatefulWidget {
   final Function(String) onWordSelect;
@@ -67,9 +68,9 @@ class HistoryScreenState extends State<HistoryScreen> {
                   ),
                   if (_history.isNotEmpty)
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.delete_outline_rounded,
-                        color: AppTheme.iconColor,
+                        color: Theme.of(context).disabledColor,
                       ),
                       onPressed: _clearHistory,
                     ),
@@ -117,32 +118,9 @@ class HistoryScreenState extends State<HistoryScreen> {
                 ),
               ),
             ),
+          // ── Footer ─────────────────────────────────────────────────
           const SliverToBoxAdapter(child: SizedBox(height: 60)),
-          SliverToBoxAdapter(
-            child: Opacity(
-              opacity: 0.2,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 40.0),
-                child: Column(
-                  children: [
-                    // Auto-updating copyright year
-                    Text(
-                      '© ${DateTime.now().year} Aviraj Saha',
-                      style: Theme.of(context).textTheme.labelMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'aviraj.saha@outlook.com',
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelMedium
-                          ?.copyWith(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          const SliverToBoxAdapter(child: AppFooter()),
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),

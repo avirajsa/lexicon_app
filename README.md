@@ -13,9 +13,28 @@
 - Voice search — speak a word to look it up
 - **Personal Lexicon** — save words to build your vocabulary
 - **Vocabulary progress tracking** — word count and milestones
+- **Reader Mode** — warm, paper-style light theme for comfortable reading
+- **Theme Persistence** — app remembers your theme choice
 - Search history — last 10 words, always up to date
 - "See more on Google" — never hit a dead end
 - Tongue Twisters — a fun vocabulary companion
+- **Social Links** — follow the developer on X, LinkedIn, GitHub, and Instagram
+
+---
+
+## How to Switch Themes
+
+- Tap the **Sun/Moon toggle** at the top-right of the **Lookup** tab.
+- Switch between the dark aesthetic and the warm **Reader Mode**.
+- The transition is smooth and your choice is saved for the next session.
+
+---
+
+## How to Follow the Developer
+
+- Scroll to the bottom of the **History** or **Lexicon** tabs.
+- You'll find the **"Follow Aviraj Saha"** section.
+- Tap the social icons to visit my profiles on X, LinkedIn, GitHub, and Instagram.
 
 ---
 
