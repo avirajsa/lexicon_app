@@ -151,6 +151,14 @@ class _LookupScreenState extends State<LookupScreen>
           }
         });
       }
+    } on NoInternetException catch (_) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _noInternet = true;
+          _resultKey++;
+        });
+      }
     } catch (_) {
       if (mounted) {
         setState(() {

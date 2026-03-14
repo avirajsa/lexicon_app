@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexicon — A Quieter Dictionary</title>
+    <meta name="description" content="A minimal, elegant dictionary app for readers. No distractions, just words.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#0a0a0a',
+                        surface: '#121212',
+                        textPrimary: '#f5f5f5',
+                        textSecondary: '#a3a3a3',
+                        accent: '#4f46e5', // Subtle indigo for links/buttons
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .fade-in {
+            animation: fadeIn 1.2s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .stagger-1 { animation-delay: 0.2s; }
+        .stagger-2 { animation-delay: 0.4s; }
+        .stagger-3 { animation-delay: 0.6s; }
+        
+        body {
+            background-color: #0a0a0a;
+            color: #f5f5f5;
+        }
+
+        .phone-card {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .phone-card:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+    </style>
+</head>
+<body class="font-sans selection:bg-accent/30">
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex flex-col items-center justify-center px-6 pt-20 pb-12 text-center max-w-5xl mx-auto">
+        <div class="fade-in">
+            <img src="../assets/icon/app_icon.png" alt="Lexicon Icon" class="w-20 h-20 mb-8 mx-auto rounded-2xl shadow-2xl">
+            <h1 class="font-serif text-6xl md:text-8xl mb-4 tracking-tight">Lexicon</h1>
+            <p class="font-serif italic text-xl md:text-2xl text-textSecondary mb-12">Words deserve more than definitions.</p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 fade-in stagger-1">
+            <a href="https://github.com/avirajsa/lexicon_app/releases/" class="bg-white text-background px-8 py-3 rounded-full font-medium hover:bg-white/90 transition-all">
+                Download APK
+            </a>
+            <a href="https://github.com/avirajsa/lexicon_app" class="border border-white/20 px-8 py-3 rounded-full font-medium hover:bg-white/5 transition-all">
+                View Source
+            </a>
+        </div>
+        
+        <div class="mt-20 w-full flex justify-center fade-in stagger-2 px-4 max-w-3xl">
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-accent/20 to-accent/0 rounded-[3rem] blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+                <img src="screenshots/lookup1.png" alt="Lexicon Preview" class="relative rounded-[2.5rem] shadow-2xl border border-white/10 w-full max-w-sm mx-auto phone-card">
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section class="py-24 px-6 max-w-2xl mx-auto text-center border-t border-white/5">
+        <h2 class="font-serif text-3xl md:text-4xl mb-8">A quieter way to explore language.</h2>
+        <p class="text-lg text-textSecondary leading-relaxed italic">
+            "Lexicon is a small tool I built because I kept running into the same problem while reading. You see a word you don’t know. You search it on Google. Suddenly you’re looking at ads, articles, links, and ten other things. By the time you return to your book, the moment is gone."
+        </p>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-24 px-6 bg-surface/30">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+            <!-- Feature 1 -->
+            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
+                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <h3 class="font-serif text-xl mb-3">Fast Lookup</h3>
+                <p class="text-textSecondary leading-relaxed">Type a word and see clear meanings and synonyms in a simple, distraction-free layout.</p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
+                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <h3 class="font-serif text-xl mb-3">Offline Dictionary</h3>
+                <p class="text-textSecondary leading-relaxed">Download the dictionary once and search anywhere, even without an internet connection.</p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
+                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                    </svg>
+                </div>
+                <h3 class="font-serif text-xl mb-3">Minimal Interface</h3>
+                <p class="text-textSecondary leading-relaxed">A calm, typography-first design that respects your reading experience.</p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
+                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                </div>
+                <h3 class="font-serif text-xl mb-3">Share Insights</h3>
+                <p class="text-textSecondary leading-relaxed">Generate beautiful cards to share your word discoveries with friends.</p>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
+                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                </div>
+                <h3 class="font-serif text-xl mb-3">Search Widget</h3>
+                <p class="text-textSecondary leading-relaxed">Search for words directly from your home screen without opening the app.</p>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
+                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+                <h3 class="font-serif text-xl mb-3">Smart Detection</h3>
+                <p class="text-textSecondary leading-relaxed">Automatically detect words from your clipboard for an even faster workflow.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section class="py-24 px-6 overflow-hidden">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="font-serif text-4xl mb-16 text-center">Thoughtfully designed.</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <img src="screenshots/lookup.png" alt="Lookup" class="rounded-3xl shadow-xl phone-card border border-white/10">
+                <img src="screenshots/history.png" alt="History" class="rounded-3xl shadow-xl phone-card border border-white/10">
+                <img src="screenshots/lexicon.png" alt="Lexicon" class="rounded-3xl shadow-xl phone-card border border-white/10 hidden md:block">
+                <img src="screenshots/twisters.png" alt="Twisters" class="rounded-3xl shadow-xl phone-card border border-white/10 hidden lg:block">
+                <img src="screenshots/dark_theme.png" alt="Dark Theme" class="rounded-3xl shadow-xl phone-card border border-white/10">
+                <img src="screenshots/light_theme.png" alt="Light Theme" class="rounded-3xl shadow-xl phone-card border border-white/10">
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="py-24 px-6 max-w-4xl mx-auto border-y border-white/5">
+        <h2 class="font-serif text-3xl mb-12 text-center">Get started with Lexicon.</h2>
+        <div class="grid md:grid-cols-3 gap-12 mb-16">
+            <div class="text-center">
+                <div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center mx-auto mb-4 text-sm font-medium">1</div>
+                <p class="text-textSecondary">Download the latest APK from Releases.</p>
+            </div>
+            <div class="text-center">
+                <div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center mx-auto mb-4 text-sm font-medium">2</div>
+                <p class="text-textSecondary">Enable "Install unknown apps" in settings.</p>
+            </div>
+            <div class="text-center">
+                <div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center mx-auto mb-4 text-sm font-medium">3</div>
+                <p class="text-textSecondary">Install and start exploring words.</p>
+            </div>
+        </div>
+        <div class="text-center">
+            <a href="https://github.com/avirajsa/lexicon_app/releases/" class="inline-block bg-white text-background px-12 py-4 rounded-full font-semibold hover:bg-white/90 transition-all text-lg mb-4">
+                Download Latest Release
+            </a>
+            <p class="text-sm text-textSecondary/50">Version 1.3.1 • 12MB</p>
+        </div>
+    </section>
+
+    <!-- Why Lexicon Section -->
+    <section class="py-24 px-6 max-w-2xl mx-auto">
+        <h2 class="font-serif text-3xl mb-8">Why Lexicon?</h2>
+        <div class="space-y-6 text-lg text-textSecondary leading-relaxed font-serif">
+            <p>
+                Dictionaries have become cluttered. In an era where every app competes for your attention, Lexicon is an exercise in restraint. It doesn't want you to stay. It wants you to understand, and then leave.
+            </p>
+            <p>
+                I built this for people who still value the deep, uninterrupted flow of reading a book. For those who find beauty in the specific meaning of a word but want to avoid the rabbit holes of the modern web.
+            </p>
+            <p>
+                It is fast because it is focused. It is offline because concentration shouldn't depend on a connection. It is minimal because words deserve to be the center of attention.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 px-6 text-center border-t border-white/5">
+        <p class="text-textSecondary mb-4">Made for people who love words.</p>
+        <p class="text-sm text-textSecondary/40">
+            Created by <a href="https://github.com/avirajsa" class="text-textSecondary/60 hover:text-white transition-colors">Aviraj Saha</a>
+        </p>
+        <div class="mt-8 flex justify-center gap-6 text-textSecondary/30 text-xs">
+            <a href="https://github.com/avirajsa/lexicon_app" class="hover:text-white transition-colors uppercase tracking-widest">GitHub</a>
+            <span>&bull;</span>
+            <span class="uppercase tracking-widest">MIT License</span>
+        </div>
+    </footer>
+
+</body>
+</html>

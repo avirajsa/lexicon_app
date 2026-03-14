@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'offline_dictionary_service.dart';
@@ -130,28 +131,57 @@ class DictionaryEntry {
   }
 }
 
+class NoInternetException implements Exception {
+  final String message;
+  NoInternetException([this.message = 'No internet connection']);
+  @override
+  String toString() => message;
+}
+
 class DictionaryApiService {
   static const String _baseUrl =
       'https://api.dictionaryapi.dev/api/v2/entries/en/';
 
   Future<DictionaryEntry?> fetchDefinition(String word) async {
-    // 1. Try Offline Search first
-    final offlineEntry = await OfflineDictionaryService.instance.lookup(word);
-    if (offlineEntry != null) return offlineEntry;
-
-    // 2. Check connectivity for online fallback
     final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
-      return null; // No internet and not found in offline DB
+    final hasInternet = connectivityResult != ConnectivityResult.none;
+    final offlineDBExists = await OfflineDictionaryService.instance.isInstalled;
+
+    // Case A: Internet OFF & Offline dictionary NOT installed -> No Internet Screen
+    if (!hasInternet && !offlineDBExists) {
+      throw NoInternetException();
     }
 
+    // Case B: Internet OFF & Offline dictionary installed -> Search offline database
+    if (!hasInternet && offlineDBExists) {
+      return await OfflineDictionaryService.instance.lookup(word);
+    }
+
+    // Case C: Internet ON & Offline dictionary installed -> Search offline first
+    if (hasInternet && offlineDBExists) {
+      final offlineEntry = await OfflineDictionaryService.instance.lookup(word);
+      if (offlineEntry != null) return offlineEntry;
+      // If not found offline, fall through to API call
+    }
+
+    // Case D: Internet ON & Offline dictionary NOT installed -> Call API normally
+    // (Also works as fallback for Case C when word not found offline)
+
     try {
-      final response = await http.get(Uri.parse('$_baseUrl$word')).timeout(const Duration(seconds: 5));
+      final response = await http
+          .get(Uri.parse('$_baseUrl$word'))
+          .timeout(const Duration(seconds: 5));
+
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         if (data.isNotEmpty) {
           return DictionaryEntry.fromJson(data[0] as Map<String, dynamic>);
         }
+      }
+    } on SocketException catch (_) {
+      // If we thought we had internet but connection fails, treat as no internet
+      if (!offlineDBExists) {
+        throw NoInternetException();
       }
     } catch (_) {
       return null;
