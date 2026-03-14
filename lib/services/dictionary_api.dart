@@ -133,17 +133,13 @@ class DictionaryApiService {
       'https://api.dictionaryapi.dev/api/v2/entries/en/';
 
   Future<DictionaryEntry?> fetchDefinition(String word) async {
-    try {
-      final response = await http.get(Uri.parse('$_baseUrl$word'));
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        if (data.isNotEmpty) {
-          return DictionaryEntry.fromJson(data[0] as Map<String, dynamic>);
-        }
+    final response = await http.get(Uri.parse('$_baseUrl$word'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      if (data.isNotEmpty) {
+        return DictionaryEntry.fromJson(data[0] as Map<String, dynamic>);
       }
-      return null;
-    } catch (_) {
-      return null;
     }
+    return null;
   }
 }

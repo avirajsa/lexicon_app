@@ -16,6 +16,7 @@ class LexiconScreen extends StatefulWidget {
 // Public so MainScaffold can call loadLexicon() via GlobalKey
 class LexiconScreenState extends State<LexiconScreen> {
   List<LexiconEntry> _entries = [];
+  final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
 
   @override
   void initState() {
@@ -30,9 +31,34 @@ class LexiconScreenState extends State<LexiconScreen> {
     }
   }
 
-  Future<void> _removeEntry(String word) async {
+  Future<void> _removeEntry(String word, int index) async {
+    final removedEntry = _entries[index];
+
+    // Remove from the list first to animate
+    _listKey.currentState?.removeItem(
+      index,
+      (context, animation) => FadeTransition(
+        opacity: animation,
+        child: SizeTransition(
+          sizeFactor: animation,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
+            child: LexiconItem(
+              entry: removedEntry,
+              onTap: () {},
+              onRemove: () {},
+            ),
+          ),
+        ),
+      ),
+      duration: const Duration(milliseconds: 300),
+    );
+
+    // Then update state
+    setState(() {
+      _entries.removeAt(index);
+    });
     await LexiconStorage.removeWord(word);
-    loadLexicon();
   }
 
   Future<void> _clearAll() async {
@@ -150,21 +176,26 @@ class LexiconScreenState extends State<LexiconScreen> {
           else
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final entry = _entries[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 4.0),
-                      child: LexiconItem(
-                        entry: entry,
-                        onTap: () => widget.onWordSelect(entry.word),
-                        onRemove: () => _removeEntry(entry.word),
+              sliver: SliverAnimatedList(
+                key: _listKey,
+                initialItemCount: _entries.length,
+                itemBuilder: (context, index, animation) {
+                  final entry = _entries[index];
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SizeTransition(
+                      sizeFactor: animation,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 4.0),
+                        child: LexiconItem(
+                          entry: entry,
+                          onTap: () => widget.onWordSelect(entry.word),
+                          onRemove: () => _removeEntry(entry.word, index),
+                        ),
                       ),
-                    );
-                  },
-                  childCount: _entries.length,
-                ),
+                    ),
+                  );
+                },
               ),
             ),
 

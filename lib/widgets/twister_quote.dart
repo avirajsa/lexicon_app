@@ -26,7 +26,7 @@ class TwisterQuote extends StatelessWidget {
           Container(
             height: 1,
             width: 40,
-            color: AppTheme.mutedColor.withAlpha(50),
+            color: Theme.of(context).colorScheme.onSurfaceVariant.withAlpha(50),
           ),
         ],
       ),

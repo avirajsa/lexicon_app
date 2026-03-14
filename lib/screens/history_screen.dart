@@ -16,6 +16,7 @@ class HistoryScreen extends StatefulWidget {
 // Public state so MainScaffold can call loadHistory() via GlobalKey.
 class HistoryScreenState extends State<HistoryScreen> {
   List<String> _history = [];
+  final GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
 
   @override
   void initState() {
@@ -30,9 +31,34 @@ class HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
-  Future<void> _removeItem(String word) async {
+  Future<void> _removeItem(String word, int index) async {
+    final removedItem = _history[index];
+
+    // Remove from the list first to animate
+    _listKey.currentState?.removeItem(
+      index,
+      (context, animation) => FadeTransition(
+        opacity: animation,
+        child: SizeTransition(
+          sizeFactor: animation,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
+            child: HistoryItem(
+              word: removedItem,
+              onTap: () {},
+              onRemove: () {},
+            ),
+          ),
+        ),
+      ),
+      duration: const Duration(milliseconds: 300),
+    );
+
+    // Then update the state data
+    setState(() {
+      _history.removeAt(index);
+    });
     await HistoryStorage.removeWord(word);
-    loadHistory();
   }
 
   Future<void> _clearHistory() async {
@@ -61,8 +87,19 @@ class HistoryScreenState extends State<HistoryScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Recent explorations',
+                        'Recent look-ups',
                         style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Long-press a word to remove it',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.5),
+                              fontSize: 12,
+                            ),
                       ),
                     ],
                   ),
@@ -101,21 +138,26 @@ class HistoryScreenState extends State<HistoryScreen> {
           else
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final word = _history[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 4.0),
-                      child: HistoryItem(
-                        word: word,
-                        onTap: () => widget.onWordSelect(word),
-                        onRemove: () => _removeItem(word),
+              sliver: SliverAnimatedList(
+                key: _listKey,
+                initialItemCount: _history.length,
+                itemBuilder: (context, index, animation) {
+                  final word = _history[index];
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SizeTransition(
+                      sizeFactor: animation,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 4.0),
+                        child: HistoryItem(
+                          word: word,
+                          onTap: () => widget.onWordSelect(word),
+                          onRemove: () => _removeItem(word, index),
+                        ),
                       ),
-                    );
-                  },
-                  childCount: _history.length,
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           // ── Footer ─────────────────────────────────────────────────

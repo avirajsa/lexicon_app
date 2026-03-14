@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/lookup_screen.dart';
 import 'screens/history_screen.dart';
@@ -80,42 +81,46 @@ class _MainScaffoldState extends State<MainScaffold>
     with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   String? _selectedHistoryWord;
+  DateTime? _lastBackPressed;
 
   // GlobalKeys let us call methods across screens without rebuilding
   final GlobalKey<HistoryScreenState> _historyKey = GlobalKey();
   final GlobalKey<LexiconScreenState> _lexiconKey = GlobalKey();
 
-  // Fade animation for tab switching
-  late final AnimationController _fadeCtrl;
-  late final Animation<double> _fadeAnim;
+  // PageController for global swipe navigation
+  late final PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    _fadeCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-      value: 1.0,
+    _pageController = PageController(
+      initialPage: _currentIndex,
+      viewportFraction: 1.0,
+      keepPage: true,
     );
-    _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeInOut);
   }
 
   @override
   void dispose() {
-    _fadeCtrl.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
   Future<void> _switchTab(int index) async {
     if (index == _currentIndex) return;
 
-    // Quick fade out → switch → fade in
-    await _fadeCtrl.reverse();
+    await _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  void _onPageChanged(int index) {
     setState(() {
       _currentIndex = index;
       if (index != 0) _selectedHistoryWord = null;
     });
-    await _fadeCtrl.forward();
 
     // Refresh relevant tab data
     if (index == 1) _historyKey.currentState?.loadHistory();
@@ -126,14 +131,48 @@ class _MainScaffoldState extends State<MainScaffold>
   Widget build(BuildContext context) {
     final isDark = widget.themeMode == ThemeMode.dark;
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          // ── Tab content with fade transition ─────────────────────
-          FadeTransition(
-            opacity: _fadeAnim,
-            child: IndexedStack(
-              index: _currentIndex,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+
+        final now = DateTime.now();
+        if (_lastBackPressed == null ||
+            now.difference(_lastBackPressed!) > const Duration(seconds: 2)) {
+          _lastBackPressed = now;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Press back again to exit',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: isDark ? AppTheme.backgroundColor : AppTheme.lightBackgroundColor,
+                    ),
+              ),
+              backgroundColor: isDark ? AppTheme.accentColor : AppTheme.lightPrimaryText,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              margin: const EdgeInsets.only(left: 100, right: 100, bottom: 100),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+          );
+        } else {
+          // Grant exit
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            // ── Tab content with PageView (Swipe Navigation) ────────────
+            PageView(
+              controller: _pageController,
+              onPageChanged: _onPageChanged,
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
               children: [
                 LookupScreen(
                   initialWord: _selectedHistoryWord,
@@ -153,11 +192,12 @@ class _MainScaffoldState extends State<MainScaffold>
                   onWordSelect: (word) {
                     setState(() {
                       _selectedHistoryWord = word;
-                      _currentIndex = 0;
                     });
-                    _fadeCtrl
-                      ..reset()
-                      ..forward();
+                    _pageController.animateToPage(
+                      0,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeOutCubic,
+                    );
                   },
                 ),
                 LexiconScreen(
@@ -165,17 +205,17 @@ class _MainScaffoldState extends State<MainScaffold>
                   onWordSelect: (word) {
                     setState(() {
                       _selectedHistoryWord = word;
-                      _currentIndex = 0;
                     });
-                    _fadeCtrl
-                      ..reset()
-                      ..forward();
+                    _pageController.animateToPage(
+                      0,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeOutCubic,
+                    );
                   },
                 ),
                 const TongueTwistersScreen(),
               ],
             ),
-          ),
 
           // ── Floating pill navigation ──────────────────────────────
           Positioned(
@@ -192,8 +232,9 @@ class _MainScaffoldState extends State<MainScaffold>
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 /// The minimal floating pill navigation bar.
