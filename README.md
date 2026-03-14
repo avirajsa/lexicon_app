@@ -1,125 +1,102 @@
 # Lexicon
 
-**Minimal dictionary & vocabulary tool. Your distraction-free reading companion.**
+Lexicon is a minimal, distraction-free dictionary and vocabulary companion designed for readers who want instant word understanding without clutter. 
+
+The app focuses on typography, calm design, and smooth interactions.
 
 ---
 
 ## Features
 
-- Instant word lookup with clean typography-first layout
-- Multiple meanings, parts of speech, and example sentences
-- Synonyms — tap any synonym to explore its meaning
-- Pronunciation display and audio playback
-- Voice search — speak a word to look it up
-- **Personal Lexicon** — save words to build your vocabulary
-- **Vocabulary progress tracking** — word count and milestones
-- **Reader Mode** — warm, paper-style light theme for comfortable reading
-- **Theme Persistence** — app remembers your theme choice
-- Search history — last 10 words, always up to date
-- "See more on Google" — never hit a dead end
-- Tongue Twisters — a fun vocabulary companion
-- **Social Links** — follow the developer on X, LinkedIn, GitHub, and Instagram
+• **Instant word lookup**: Quick and intuitive dictionary search.
+• **Multiple meanings and synonyms**: Explore the depth of words with clear definitions and synonyms.
+• **Google deep-link**: Extended exploration available for every word.
+• **Search history**: Automatically tracks your lookups with long-press deletion for easy management.
+• **Personal lexicon tracker**: Save words to your own personal collection.
+• **50 curated tongue twisters**: A fun way to refine your speech and vocabulary.
+• **Reader-focused themes**: Includes a dark theme and a warm paper light theme.
+• **Swipe navigation**: Fluid horizontal swipes between tabs for modern interaction.
+• **Smooth animations**: Premium animations throughout the app for a refined feel.
+• **No-internet detection**: Visual indicators and graceful handling of connectivity issues.
 
 ---
 
-## How to Switch Themes
+## Screenshots
 
-- Tap the **Sun/Moon toggle** at the top-right of the **Lookup** tab.
-- Switch between the dark aesthetic and the warm **Reader Mode**.
-- The transition is smooth and your choice is saved for the next session.
+### Lookup Screen
+![Lookup Screen](docs/screenshots/lookup.png)
 
----
+### Search History
+![Search History](docs/screenshots/history.png)
 
-## How to Follow the Developer
+### Lexicon Tracker
+![Lexicon Tracker](docs/screenshots/lexicon.png)
 
-- Scroll to the bottom of the **History** or **Lexicon** tabs.
-- You'll find the **"Follow Aviraj Saha"** section.
-- Tap the social icons to visit my profiles on X, LinkedIn, GitHub, and Instagram.
+### Tongue Twisters
+![Tongue Twisters](docs/screenshots/twisters.png)
 
----
+### Dark Theme
+![Dark Theme](docs/screenshots/dark_theme.png)
 
-## How to Search Words
-
-1. Open the app — you land on the **Lookup** tab.
-2. Tap the search bar at the center of the screen.
-3. Type any English word and press **Enter** (or tap the mic to speak it).
-4. The full definition appears with pronunciations, meanings, and examples.
+### Light Theme
+![Light Theme](docs/screenshots/light_theme.png)
 
 ---
 
-## How to Remove History Items
+## Installation
 
-- Go to the **History** tab.
-- **Swipe any item left** to remove it instantly.
-- The item animates away — no confirmation dialog.
-- Tap the trash icon in the top-right to clear all history at once.
+### Clone the repository
+```bash
+git clone <repository-url>
+```
 
----
+### Install dependencies
+```bash
+flutter pub get
+```
 
-## How to Use Synonyms
-
-- After a successful lookup, scroll down to the **Synonyms** section.
-- Each synonym is tappable — tap one to instantly search that word.
-- This creates a fast vocabulary exploration flow.
-
----
-
-## How to Add Words to Your Lexicon
-
-- After looking up a word, tap the **bookmark icon** (top-right of the word title).
-- The icon fills to show the word is saved.
-- Tap again to remove from your Lexicon.
-- View all saved words in the **Lexicon** tab.
+### Run the app
+```bash
+flutter run
+```
 
 ---
 
-## How to Track Vocabulary Progress
+## Release Support
 
-- Open the **Lexicon** tab.
-- Your saved word count appears at the top: `37 words`.
-- Milestone messages appear at **25, 50, and 100 words**.
-- Tap any saved word to re-open its definition.
-- Swipe left to remove a word from your Lexicon.
+### Build Release APK
+```bash
+flutter build apk --release
+```
 
----
-
-## How to Open Google Results
-
-- After any lookup, tap **"See more on Google →"** at the bottom.
-- Even if no dictionary result is found, this link is always visible.
+**APK output:** `build/app/outputs/flutter-apk/app-release.apk`
 
 ---
 
-## App Navigation
+## Technology Stack
 
-The app uses a **floating pill navigation** at the bottom:
-
-| Icon | Tab |
-|---|---|
-| 🔍 | Lookup — Dictionary search |
-| 🕐 | History — Recent searches |
-| 🔖 | Lexicon — Your saved words |
-| 📖 | Twisters — Tongue twisters |
+• **Framework**: Flutter
+• **Language**: Dart
+• **Networking**: HTTP APIs
+• **Storage**: SharedPreferences
+• **Design**: Material Design
 
 ---
 
-## How Tongue Twisters Work
+## Design Philosophy
 
-- Tap the **Twisters** tab to browse a curated collection.
-- Each twister is displayed in large, readable typography.
-- Scroll to explore more.
+Lexicon is designed for **readers**. 
 
----
-
-## App Info
-
-| Property | Value |
-|---|---|
-| App Name | Lexicon |
-| Version | 1.2.0 |
-| Developer | Aviraj Saha |
-| Contact | aviraj.saha@outlook.com |
+The interface prioritizes:
+• minimal visual noise
+• calm typography
+• fluid interactions
+• fast word understanding
 
 ---
 
-*Lexicon is a distraction-free reading companion built for readers, students, and curious minds.*
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2026 Aviraj Saha
