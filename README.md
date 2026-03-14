@@ -5,7 +5,7 @@
 </h1>
 
 <p>
-  <img src="https://img.shields.io/badge/version-v1.3.1-black">
+  <img src="https://img.shields.io/badge/version-v1.4.0-black">
   <img src="https://img.shields.io/badge/flutter-3.x-blue">
   <img src="https://img.shields.io/badge/platform-Android-green">
   <img src="https://img.shields.io/badge/license-MIT-lightgrey">

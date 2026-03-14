@@ -15,9 +15,10 @@ class ShareCardService {
     
     final capitalizedWord = '${word[0].toUpperCase()}${word.substring(1)}';
     final text = 'Word: $capitalizedWord\n\n'
-                 'Meaning: ${definition ?? "No definition found."}\n\n'
-                 '"Thought you might enjoy this word."\n\n'
-                 'Shared via Lexicon — a minimal dictionary for curious readers.';
+                 'Meaning:\n'
+                 '${definition ?? "No definition found."}\n\n'
+                 'Discover more beautiful words with Lexicon:\n'
+                 'https://avirajsa.github.io/lexicon_app/';
     
     await Share.share(text);
   }

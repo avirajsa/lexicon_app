@@ -203,7 +203,7 @@ class SettingsSheet extends StatelessWidget {
                       title: 'Share Lexicon',
                       trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.mutedColor),
                       onTap: () {
-                        Share.share('Check out Lexicon — a minimal dictionary for readers! https://example.com/lexicon');
+                        Share.share('Discover new words with Lexicon.\n\nA minimal dictionary built for readers and curious minds.\n\nDownload it here:\nhttps://avirajsa.github.io/lexicon_app/');
                       },
                     ),
                     _SettingsRow(
@@ -211,7 +211,7 @@ class SettingsSheet extends StatelessWidget {
                       title: 'Send Feedback',
                       trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.mutedColor),
                       onTap: () async {
-                        final url = Uri.parse('mailto:aviraj@example.com?subject=Lexicon%20Feedback');
+                        final url = Uri.parse('mailto:aviraj.saha@outlook.com?subject=Lexicon%20App%20Feedback');
                         if (await canLaunchUrl(url)) {
                           await launchUrl(url);
                         }
