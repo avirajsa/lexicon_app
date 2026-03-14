@@ -107,7 +107,7 @@ Lexicon includes both a deep dark theme and a warm, paper-like light theme desig
 
 The easiest way to install Lexicon is from the **Releases** page.
 
-1. Open the **Releases** section of this repository  
+1. Open the **Releases** section of this repository  or [click here](https://github.com/avirajsa/lexicon_app/releases/)
 2. Download the latest **APK**  
 3. Open it on your Android device  
 4. Install the app
@@ -124,7 +124,7 @@ Clone the repository
 
 ```
 
-git clone [https://github.com/avirajsa/lexicon_app.git](https://github.com/avirajsa/lexicon_app.git)
+git clone https://github.com/avirajsa/lexicon_app.git](https://github.com/avirajsa/lexicon_app.git
 
 ```
 
