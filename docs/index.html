@@ -6,10 +6,17 @@
     <title>Lexicon — A Quieter Dictionary</title>
     <meta name="description" content="A minimal, elegant dictionary app for readers. No distractions, just words.">
     
+    <!-- URL Configuration -->
+    <link rel="canonical" href="https://avirajsa.github.io/lexicon_app/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/icon/app_icon.png">
+    <link rel="apple-touch-icon" href="../assets/icon/app_icon.png">
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,11 +29,11 @@
                         surface: '#121212',
                         textPrimary: '#f5f5f5',
                         textSecondary: '#a3a3a3',
-                        accent: '#4f46e5', // Subtle indigo for links/buttons
+                        accent: '#6366f1', // Indigo
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
+                        serif: ['Libre Baskerville', 'serif'],
                     },
                 }
             }
@@ -34,205 +41,254 @@
     </script>
     
     <style>
-        .fade-in {
-            animation: fadeIn 1.2s ease-out forwards;
+        .reveal {
             opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
-        .stagger-1 { animation-delay: 0.2s; }
-        .stagger-2 { animation-delay: 0.4s; }
-        .stagger-3 { animation-delay: 0.6s; }
         
         body {
             background-color: #0a0a0a;
             color: #f5f5f5;
         }
 
-        .phone-card {
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .floating-card {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
         }
-        .phone-card:hover {
-            transform: scale(1.05) translateY(-10px);
+        .floating-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.15);
+        }
+
+        .asymmetric-dot {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+            z-index: -1;
         }
     </style>
 </head>
-<body class="font-sans selection:bg-accent/30">
+<body class="font-sans selection:bg-accent/30 overflow-x-hidden">
+
+    <!-- Header / Navigation -->
+    <nav class="fixed top-0 w-full z-50 px-8 py-6 backdrop-blur-md bg-background/50 border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="../assets/icon/app_icon.png" alt="Lexicon" class="w-8 h-8 rounded-lg">
+                <span class="font-serif text-xl tracking-tight">Lexicon</span>
+            </div>
+            <div class="hidden md:flex gap-10 text-sm font-medium tracking-wide text-textSecondary uppercase">
+                <a href="#features" class="hover:text-white transition-colors">Features</a>
+                <a href="#screenshots" class="hover:text-white transition-colors">Gallery</a>
+                <a href="#download" class="hover:text-white transition-colors">Download</a>
+            </div>
+            <a href="mailto:aviraj.saha@outlook.com?subject=Lexicon App Feedback" class="bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-2 rounded-full text-sm font-medium transition-all">
+                Feedback
+            </a>
+        </div>
+    </nav>
 
     <!-- Hero Section -->
-    <section class="min-h-screen flex flex-col items-center justify-center px-6 pt-20 pb-12 text-center max-w-5xl mx-auto">
-        <div class="fade-in">
-            <img src="../assets/icon/app_icon.png" alt="Lexicon Icon" class="w-20 h-20 mb-8 mx-auto rounded-2xl shadow-2xl">
-            <h1 class="font-serif text-6xl md:text-8xl mb-4 tracking-tight">Lexicon</h1>
-            <p class="font-serif italic text-xl md:text-2xl text-textSecondary mb-12">Words deserve more than definitions.</p>
+    <section class="relative min-h-screen flex flex-col items-center justify-center px-6 pt-32 pb-20 text-center">
+        <div class="asymmetric-dot -top-10 -left-10"></div>
+        <div class="asymmetric-dot bottom-20 right-0"></div>
+        
+        <div class="reveal active">
+            <h1 class="font-serif text-5xl md:text-8xl mb-8 tracking-tight leading-tight max-w-4xl mx-auto">
+                A quieter way to <br class="hidden md:block"> explore language.
+            </h1>
+            <p class="font-serif italic text-xl md:text-2xl text-textSecondary mb-12 max-w-2xl mx-auto leading-relaxed">
+                Words deserve more than definitions. <br class="hidden md:block"> 
+                Lexicon is a reading companion meant to disappear.
+            </p>
         </div>
         
-        <div class="flex flex-col sm:flex-row gap-4 fade-in stagger-1">
-            <a href="https://github.com/avirajsa/lexicon_app/releases/" class="bg-white text-background px-8 py-3 rounded-full font-medium hover:bg-white/90 transition-all">
+        <div class="flex flex-col sm:flex-row gap-5 reveal active" style="transition-delay: 200ms;">
+            <a href="https://github.com/avirajsa/lexicon_app/releases/" class="bg-accent text-white px-10 py-4 rounded-full font-semibold hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
                 Download APK
             </a>
-            <a href="https://github.com/avirajsa/lexicon_app" class="border border-white/20 px-8 py-3 rounded-full font-medium hover:bg-white/5 transition-all">
-                View Source
+            <a href="https://github.com/avirajsa/lexicon_app" class="border border-white/20 px-10 py-4 rounded-full font-semibold hover:bg-white/5 transition-all">
+                View on GitHub
             </a>
         </div>
         
-        <div class="mt-20 w-full flex justify-center fade-in stagger-2 px-4 max-w-3xl">
-            <div class="relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-accent/20 to-accent/0 rounded-[3rem] blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                <img src="screenshots/lookup1.png" alt="Lexicon Preview" class="relative rounded-[2.5rem] shadow-2xl border border-white/10 w-full max-w-sm mx-auto phone-card">
+        <div class="mt-24 w-full flex justify-center reveal active" style="transition-delay: 400ms;">
+            <div class="relative max-w-4xl px-4">
+                <img src="screenshots/lookup1.png" alt="Lexicon Entry" class="rounded-[2.5rem] shadow-2xl border border-white/10 w-full max-w-xs md:max-w-sm mx-auto floating-card">
             </div>
         </div>
     </section>
 
-    <!-- Philosophy Section -->
-    <section class="py-24 px-6 max-w-2xl mx-auto text-center border-t border-white/5">
-        <h2 class="font-serif text-3xl md:text-4xl mb-8">A quieter way to explore language.</h2>
-        <p class="text-lg text-textSecondary leading-relaxed italic">
-            "Lexicon is a small tool I built because I kept running into the same problem while reading. You see a word you don’t know. You search it on Google. Suddenly you’re looking at ads, articles, links, and ten other things. By the time you return to your book, the moment is gone."
-        </p>
+    <!-- Quote -->
+    <section class="py-32 px-6 max-w-4xl mx-auto text-center border-t border-white/5">
+        <div class="reveal">
+            <svg class="w-12 h-12 text-accent/20 mx-auto mb-8" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19C19.5523 16 20 15.5523 20 15V9C20 8.44772 19.5523 8 19 8H16C14.8954 8 14 7.10457 14 6V3L14 3C14 1.89543 14.8954 1 16 1H19C21.7614 1 24 3.23858 24 6V15C24 18.3137 21.3137 21 18 21H14.017ZM0 21L0 18C0 16.8954 0.895431 16 2 16H5C5.55228 16 6 15.5523 6 15V9C6 8.44772 5.55228 8 5 8H2C0.895431 8 0 7.10457 0 6V3L0 3C0 1.89543 0.895431 1 2 1H5C7.76142 1 10 3.23858 10 6V15C10 18.3137 7.31371 21 4 21H0Z"/>
+            </svg>
+            <p class="font-serif text-3xl md:text-5xl text-textPrimary leading-tight italic">
+                The focus should stay on the book, <br class="hidden md:block"> not the interface.
+            </p>
+        </div>
+    </section>
+
+    <!-- Asymmetric Philosophy Section -->
+    <section class="py-32 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 md:gap-24">
+            <div class="md:w-1/2 reveal">
+                <h2 class="font-serif text-4xl mb-8">No ads. No clutter. No rabbit holes.</h2>
+                <div class="space-y-6 text-lg text-textSecondary leading-relaxed font-serif">
+                    <p>
+                        Most tools try to give you everything at once — definitions, articles, translations, links, news, and videos. But sometimes, you just want to understand a word and move on.
+                    </p>
+                    <p>
+                        Lexicon is built for that exact moment. It gives you the meaning of a word instantly, shows related concepts if you want them, and then stays out of your way.
+                    </p>
+                </div>
+            </div>
+            <div class="md:w-1/2 reveal" style="transition-delay: 200ms;">
+                <img src="screenshots/lexicon.png" alt="Library" class="rounded-[2.5rem] shadow-2xl border border-white/10 w-full max-w-sm floating-card lg:rotate-2">
+            </div>
+        </div>
     </section>
 
     <!-- Features Section -->
-    <section class="py-24 px-6 bg-surface/30">
-        <div class="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-12">
-            <!-- Feature 1 -->
-            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
-                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
-                <h3 class="font-serif text-xl mb-3">Fast Lookup</h3>
-                <p class="text-textSecondary leading-relaxed">Type a word and see clear meanings and synonyms in a simple, distraction-free layout.</p>
+    <section id="features" class="py-32 px-6 bg-surface/30">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-20 reveal">
+                <h2 class="font-serif text-4xl mb-4">Focused Utilities</h2>
+                <p class="text-textSecondary">Everything you need, nothing you don't.</p>
             </div>
-
-            <!-- Feature 2 -->
-            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
-                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <!-- Fast Lookup -->
+                <div class="p-10 rounded-3xl border border-white/5 bg-surface/50 reveal hover:bg-surface transition-all">
+                    <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-8 text-accent">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <h3 class="font-serif text-2xl mb-4">Fast Lookup</h3>
+                    <p class="text-textSecondary leading-relaxed">Search with speed and clarity. Get the essence of a word without the overhead of the web.</p>
                 </div>
-                <h3 class="font-serif text-xl mb-3">Offline Dictionary</h3>
-                <p class="text-textSecondary leading-relaxed">Download the dictionary once and search anywhere, even without an internet connection.</p>
-            </div>
 
-            <!-- Feature 3 -->
-            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
-                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-                    </svg>
+                <!-- Offline First -->
+                <div class="p-10 rounded-3xl border border-white/5 bg-surface/50 reveal hover:bg-surface transition-all">
+                    <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-8 text-accent">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    </div>
+                    <h3 class="font-serif text-2xl mb-4">Offline Access</h3>
+                    <p class="text-textSecondary leading-relaxed">Concentration shouldn't depend on a connection. Access the full dictionary anywhere.</p>
                 </div>
-                <h3 class="font-serif text-xl mb-3">Minimal Interface</h3>
-                <p class="text-textSecondary leading-relaxed">A calm, typography-first design that respects your reading experience.</p>
-            </div>
 
-            <!-- Feature 4 -->
-            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
-                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
+                <!-- Shared Insights -->
+                <div class="p-10 rounded-3xl border border-white/5 bg-surface/50 reveal hover:bg-surface transition-all">
+                    <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-8 text-accent">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                    <h3 class="font-serif text-2xl mb-4">Share Cards</h3>
+                    <p class="text-textSecondary leading-relaxed">Convert your favorite words into beautiful images to share with friends or save for later.</p>
                 </div>
-                <h3 class="font-serif text-xl mb-3">Share Insights</h3>
-                <p class="text-textSecondary leading-relaxed">Generate beautiful cards to share your word discoveries with friends.</p>
-            </div>
-
-            <!-- Feature 5 -->
-            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
-                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                </div>
-                <h3 class="font-serif text-xl mb-3">Search Widget</h3>
-                <p class="text-textSecondary leading-relaxed">Search for words directly from your home screen without opening the app.</p>
-            </div>
-
-            <!-- Feature 6 -->
-            <div class="p-8 rounded-3xl border border-white/5 bg-surface/50 hover:bg-surface transition-all">
-                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-6 text-accent">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                </div>
-                <h3 class="font-serif text-xl mb-3">Smart Detection</h3>
-                <p class="text-textSecondary leading-relaxed">Automatically detect words from your clipboard for an even faster workflow.</p>
             </div>
         </div>
     </section>
 
-    <!-- Screenshots Section -->
-    <section class="py-24 px-6 overflow-hidden">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="font-serif text-4xl mb-16 text-center">Thoughtfully designed.</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                <img src="screenshots/lookup.png" alt="Lookup" class="rounded-3xl shadow-xl phone-card border border-white/10">
-                <img src="screenshots/history.png" alt="History" class="rounded-3xl shadow-xl phone-card border border-white/10">
-                <img src="screenshots/lexicon.png" alt="Lexicon" class="rounded-3xl shadow-xl phone-card border border-white/10 hidden md:block">
-                <img src="screenshots/twisters.png" alt="Twisters" class="rounded-3xl shadow-xl phone-card border border-white/10 hidden lg:block">
-                <img src="screenshots/dark_theme.png" alt="Dark Theme" class="rounded-3xl shadow-xl phone-card border border-white/10">
-                <img src="screenshots/light_theme.png" alt="Light Theme" class="rounded-3xl shadow-xl phone-card border border-white/10">
+    <!-- Gallery Section -->
+    <section id="screenshots" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="font-serif text-4xl mb-20 text-center reveal">The Lexicon Experience</h2>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+                <div class="reveal"><img src="screenshots/lookup.png" alt="Search" class="rounded-[2.5rem] shadow-xl border border-white/10 floating-card"></div>
+                <div class="reveal" style="transition-delay: 100ms;"><img src="screenshots/history.png" alt="History" class="rounded-[2.5rem] shadow-xl border border-white/10 floating-card"></div>
+                <div class="reveal" style="transition-delay: 200ms;"><img src="screenshots/settings.png" alt="Settings" class="rounded-[2.5rem] shadow-xl border border-white/10 floating-card"></div>
+                <div class="reveal" style="transition-delay: 300ms;"><img src="screenshots/share.png" alt="Share" class="rounded-[2.5rem] shadow-xl border border-white/10 floating-card"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App in Action (Text + Image) -->
+    <section class="py-32 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row-reverse items-center gap-16 md:gap-24">
+            <div class="md:w-1/2 reveal">
+                <h2 class="font-serif text-4xl mb-8">Articulated reading.</h2>
+                <div class="space-y-6 text-lg text-textSecondary leading-relaxed font-serif">
+                    <p>
+                        Beyond definitions, Lexicon includes a collection of tongue twisters to sharpen your speech. It’s part of the broader goal: to make language more accessible and enjoyable.
+                    </p>
+                    <p>
+                        Whether in dark mode or a warm, paper-like light theme, the app is designed for long reading sessions and deep focus.
+                    </p>
+                </div>
+            </div>
+            <div class="md:w-1/2 reveal" style="transition-delay: 200ms;">
+                <img src="screenshots/twisters.png" alt="Twisters" class="rounded-[2.5rem] shadow-2xl border border-white/10 w-full max-w-sm floating-card lg:-rotate-2">
             </div>
         </div>
     </section>
 
     <!-- Installation Section -->
-    <section class="py-24 px-6 max-w-4xl mx-auto border-y border-white/5">
-        <h2 class="font-serif text-3xl mb-12 text-center">Get started with Lexicon.</h2>
-        <div class="grid md:grid-cols-3 gap-12 mb-16">
-            <div class="text-center">
-                <div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center mx-auto mb-4 text-sm font-medium">1</div>
-                <p class="text-textSecondary">Download the latest APK from Releases.</p>
+    <section id="download" class="py-32 px-6 bg-surface/20 border-y border-white/5 relative">
+        <div class="asymmetric-dot top-0 left-1/2 -translate-x-1/2 opacity-20"></div>
+        <div class="max-w-4xl mx-auto">
+            <h2 class="font-serif text-4xl mb-16 text-center reveal">Getting Started</h2>
+            <div class="grid md:grid-cols-3 gap-16 mb-20">
+                <div class="reveal text-center md:text-left">
+                    <span class="font-serif italic text-4xl text-accent/30 block mb-6">01</span>
+                    <h4 class="font-serif text-xl mb-4 text-textPrimary">Download</h4>
+                    <p class="text-textSecondary leading-relaxed">Grab the latest APK directly from our GitHub releases page.</p>
+                </div>
+                <div class="reveal text-center md:text-left" style="transition-delay: 100ms;">
+                    <span class="font-serif italic text-4xl text-accent/30 block mb-6">02</span>
+                    <h4 class="font-serif text-xl mb-4 text-textPrimary">Allow</h4>
+                    <p class="text-textSecondary leading-relaxed">Enable "Install unknown apps" in your Android security settings.</p>
+                </div>
+                <div class="reveal text-center md:text-left" style="transition-delay: 200ms;">
+                    <span class="font-serif italic text-4xl text-accent/30 block mb-6">03</span>
+                    <h4 class="font-serif text-xl mb-4 text-textPrimary">Explore</h4>
+                    <p class="text-textSecondary leading-relaxed">Open Lexicon and start looking up words without distractions.</p>
+                </div>
             </div>
-            <div class="text-center">
-                <div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center mx-auto mb-4 text-sm font-medium">2</div>
-                <p class="text-textSecondary">Enable "Install unknown apps" in settings.</p>
+            <div class="text-center reveal">
+                <a href="https://github.com/avirajsa/lexicon_app/releases/" class="inline-block bg-white text-background px-14 py-5 rounded-full font-bold hover:bg-white/90 transition-all text-xl mb-6 shadow-xl">
+                    Download APK (12MB)
+                </a>
+                <p class="text-xs text-textSecondary uppercase tracking-widest">Supports Android 8.0 and above</p>
             </div>
-            <div class="text-center">
-                <div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center mx-auto mb-4 text-sm font-medium">3</div>
-                <p class="text-textSecondary">Install and start exploring words.</p>
-            </div>
-        </div>
-        <div class="text-center">
-            <a href="https://github.com/avirajsa/lexicon_app/releases/" class="inline-block bg-white text-background px-12 py-4 rounded-full font-semibold hover:bg-white/90 transition-all text-lg mb-4">
-                Download Latest Release
-            </a>
-            <p class="text-sm text-textSecondary/50">Version 1.3.1 • 12MB</p>
-        </div>
-    </section>
-
-    <!-- Why Lexicon Section -->
-    <section class="py-24 px-6 max-w-2xl mx-auto">
-        <h2 class="font-serif text-3xl mb-8">Why Lexicon?</h2>
-        <div class="space-y-6 text-lg text-textSecondary leading-relaxed font-serif">
-            <p>
-                Dictionaries have become cluttered. In an era where every app competes for your attention, Lexicon is an exercise in restraint. It doesn't want you to stay. It wants you to understand, and then leave.
-            </p>
-            <p>
-                I built this for people who still value the deep, uninterrupted flow of reading a book. For those who find beauty in the specific meaning of a word but want to avoid the rabbit holes of the modern web.
-            </p>
-            <p>
-                It is fast because it is focused. It is offline because concentration shouldn't depend on a connection. It is minimal because words deserve to be the center of attention.
-            </p>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-20 px-6 text-center border-t border-white/5">
-        <p class="text-textSecondary mb-4">Made for people who love words.</p>
-        <p class="text-sm text-textSecondary/40">
-            Created by <a href="https://github.com/avirajsa" class="text-textSecondary/60 hover:text-white transition-colors">Aviraj Saha</a>
-        </p>
-        <div class="mt-8 flex justify-center gap-6 text-textSecondary/30 text-xs">
-            <a href="https://github.com/avirajsa/lexicon_app" class="hover:text-white transition-colors uppercase tracking-widest">GitHub</a>
-            <span>&bull;</span>
-            <span class="uppercase tracking-widest">MIT License</span>
+    <footer class="py-24 px-6 text-center overflow-hidden">
+        <div class="max-w-xl mx-auto">
+            <img src="../assets/icon/app_icon.png" alt="Lexicon" class="w-12 h-12 rounded-xl mx-auto mb-10 opacity-50">
+            <p class="font-serif text-2xl italic text-textSecondary mb-12">
+                "Words are, in my not-so-humble opinion, <br> our most inexhaustible source of magic."
+            </p>
+            <div class="flex justify-center gap-10 mb-12 text-sm font-medium tracking-widest uppercase text-textSecondary/40">
+                <a href="https://github.com/avirajsa/lexicon_app" class="hover:text-white transition-colors">GitHub</a>
+                <a href="https://avirajsa.github.io/lexicon_app/" class="hover:text-white transition-colors">Website</a>
+                <a href="mailto:aviraj.saha@outlook.com?subject=Lexicon App Feedback" class="hover:text-white transition-colors">Contact</a>
+            </div>
+            <p class="text-xs text-textSecondary/20 uppercase tracking-[0.2em]">
+                Built by <a href="https://github.com/avirajsa" class="hover:text-textSecondary/40 transition-colors">Aviraj Saha</a> &bull; &copy; 2026
+            </p>
         </div>
     </footer>
 
+    <!-- Reveal Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        });
+    </script>
 </body>
 </html>
