@@ -6,9 +6,11 @@ import '../storage/history_storage.dart';
 import '../widgets/floating_search_bar.dart';
 import '../widgets/word_display.dart';
 import '../theme/app_theme.dart';
+import '../services/suggestion_service.dart';
 
 class LookupScreen extends StatefulWidget {
   final String? initialWord;
+  final bool autoFocus;
   final Widget? themeToggle;
   final VoidCallback? onHistoryUpdated;
   final VoidCallback? onLexiconUpdated;
@@ -16,6 +18,7 @@ class LookupScreen extends StatefulWidget {
   const LookupScreen({
     super.key,
     this.initialWord,
+    this.autoFocus = false,
     this.themeToggle,
     this.onHistoryUpdated,
     this.onLexiconUpdated,
@@ -54,6 +57,12 @@ class _LookupScreenState extends State<LookupScreen>
     if (widget.initialWord != null) {
       _searchController.text = widget.initialWord!;
       _handleSearch();
+    } else if (widget.autoFocus) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          _searchFocus.requestFocus();
+        }
+      });
     }
   }
 
@@ -235,12 +244,7 @@ class _LookupScreenState extends State<LookupScreen>
           ),
 
           // ── Theme Toggle ──────────────────────────────────────────
-          if (widget.themeToggle != null)
-            Positioned(
-              top: 48,
-              right: 24,
-                child: widget.themeToggle!,
-              ),
+          // Moved to TopBar in main.dart
           ],
         ),
       ),
@@ -295,16 +299,35 @@ class _LookupScreenState extends State<LookupScreen>
     }
 
     if (_errorWord != null) {
+      final suggestions = SuggestionService.getSuggestions(_errorWord!);
+
       return Padding(
         padding: const EdgeInsets.only(top: 40.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'No dictionary result found.',
-              style: Theme.of(context).textTheme.bodyMedium,
+              'Word not found',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
-            const SizedBox(height: 24),
+            if (suggestions.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text(
+                'Did you mean?',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppTheme.mutedColor,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: suggestions.map((s) => _buildSuggestionChip(s)).toList(),
+              ),
+            ],
+            const SizedBox(height: 32),
             GestureDetector(
               onTap: () => _launchGoogle(_errorWord!),
               child: Row(
@@ -354,6 +377,29 @@ class _LookupScreenState extends State<LookupScreen>
                 ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSuggestionChip(String word) {
+    return GestureDetector(
+      onTap: () {
+        _searchController.text = word;
+        _handleSearch();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary.withAlpha(20),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          word,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w500,
+              ),
+        ),
       ),
     );
   }

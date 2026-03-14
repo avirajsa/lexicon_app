@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'offline_dictionary_service.dart';
 
 /// A single definition within a meaning group.
 class WordDefinition {
@@ -133,12 +135,26 @@ class DictionaryApiService {
       'https://api.dictionaryapi.dev/api/v2/entries/en/';
 
   Future<DictionaryEntry?> fetchDefinition(String word) async {
-    final response = await http.get(Uri.parse('$_baseUrl$word'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      if (data.isNotEmpty) {
-        return DictionaryEntry.fromJson(data[0] as Map<String, dynamic>);
+    // 1. Try Offline Search first
+    final offlineEntry = await OfflineDictionaryService.instance.lookup(word);
+    if (offlineEntry != null) return offlineEntry;
+
+    // 2. Check connectivity for online fallback
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      return null; // No internet and not found in offline DB
+    }
+
+    try {
+      final response = await http.get(Uri.parse('$_baseUrl$word')).timeout(const Duration(seconds: 5));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        if (data.isNotEmpty) {
+          return DictionaryEntry.fromJson(data[0] as Map<String, dynamic>);
+        }
       }
+    } catch (_) {
+      return null;
     }
     return null;
   }

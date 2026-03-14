@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/lookup_screen.dart';
 import 'screens/history_screen.dart';
@@ -8,10 +9,18 @@ import 'screens/lexicon_screen.dart';
 import 'screens/tongue_twisters_screen.dart';
 import 'theme/app_theme.dart';
 import 'widgets/theme_toggle.dart';
+import 'widgets/top_bar.dart';
+import 'services/settings_provider.dart';
+import 'storage/lexicon_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const LexiconApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => SettingsProvider(),
+      child: const LexiconApp(),
+    ),
+  );
 }
 
 class LexiconApp extends StatefulWidget {
@@ -22,43 +31,149 @@ class LexiconApp extends StatefulWidget {
 }
 
 class _LexiconAppState extends State<LexiconApp> {
-  ThemeMode _themeMode = ThemeMode.dark;
 
   @override
   void initState() {
     super.initState();
-    _loadTheme();
+    _initIntentHandling();
+    _initClipboardListener();
   }
 
-  Future<void> _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isLight = prefs.getBool('is_light_mode') ?? false;
-    setState(() {
-      _themeMode = isLight ? ThemeMode.light : ThemeMode.dark;
+
+  Future<void> _initIntentHandling() async {
+    // Handle deep links (widgets) and PROCESS_TEXT intents
+    // For this implementation, we check the initial intent 
+    // and if it's a deep link or has text, we trigger search.
+    const channel = MethodChannel('com.example.lexicon/intent');
+    try {
+      final String? sharedText = await channel.invokeMethod('getSharedText');
+      if (sharedText != null && sharedText.isNotEmpty) {
+        if (sharedText == "WIDGET_SEARCH_FOCUS") {
+          _focusSearchBar();
+        } else {
+          _handleIncomingWord(sharedText);
+        }
+      }
+    } catch (_) {}
+  }
+
+  void _initClipboardListener() {
+    // Feature 5: Floating Bubble
+    Clipboard.getData(Clipboard.kTextPlain).then((value) {
+      _lastClipboardText = value?.text;
+    });
+
+    // Poll clipboard for simplicity in this demo environment
+    // real implementation might use a dedicated plugin or foreground service
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 2));
+      final data = await Clipboard.getData(Clipboard.kTextPlain);
+      final rawText = data?.text?.trim();
+      if (rawText != null && rawText != _lastClipboardText) {
+        _lastClipboardText = rawText;
+        final settings = Provider.of<SettingsProvider>(context, listen: false);
+        if (settings.floatingBubble) {
+          final word = _extractFirstWord(rawText);
+          if (word.isNotEmpty) {
+            _showFloatingBubble(word);
+          }
+        }
+      }
+      return true;
     });
   }
 
-  Future<void> _toggleTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _themeMode =
-          _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
-      prefs.setBool('is_light_mode', _themeMode == ThemeMode.light);
-    });
+  String _extractFirstWord(String text) {
+    if (text.isEmpty) return '';
+    // Extract first alphanumeric sequence
+    final regex = RegExp(r'[a-zA-Z0-9]+');
+    final match = regex.firstMatch(text);
+    return match?.group(0) ?? '';
   }
+
+  void _showFloatingBubble(String word) {
+    // Implementation of a simple overlay or snackbar as a "bubble" for now
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.search_rounded, color: Colors.white),
+            const SizedBox(width: 12),
+            Text('Lookup "$word"?'),
+          ],
+        ),
+        action: SnackBarAction(
+          label: 'OPEN',
+          onPressed: () => _handleIncomingWord(word),
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        margin: const EdgeInsets.all(20),
+      ),
+    );
+  }
+
+  String? _lastClipboardText;
+
+  void _handleIncomingWord(String word) {
+    if (word.isEmpty) {
+      _showToast('Clipboard is empty.');
+      return;
+    }
+    
+    final extractedWord = _extractFirstWord(word);
+    if (extractedWord.isEmpty) {
+      _showToast('No word detected in clipboard.');
+      return;
+    }
+
+    _mainScaffoldKey.currentState?.handleSharedWord(extractedWord);
+  }
+
+  void _focusSearchBar() {
+    _mainScaffoldKey.currentState?.focusSearch();
+  }
+
+  void _showToast(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  final GlobalKey<MainScaffoldState> _mainScaffoldKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Lexicon',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: _themeMode,
-      home: MainScaffold(
-        themeMode: _themeMode,
-        onThemeToggle: _toggleTheme,
-      ),
+    return Consumer<SettingsProvider>(
+      builder: (context, settings, _) {
+        final isDark = settings.themeMode == ThemeMode.dark;
+        final theme = AppTheme.getTheme(isDark, settings.colorblindMode, settings.dyslexiaMode);
+
+        return MaterialApp(
+          title: 'Lexicon',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.getTheme(false, settings.colorblindMode, settings.dyslexiaMode),
+          darkTheme: AppTheme.getTheme(true, settings.colorblindMode, settings.dyslexiaMode),
+          themeMode: settings.themeMode,
+          builder: (context, child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaleFactor: settings.textScaleFactor,
+              ),
+              child: child!,
+            );
+          },
+          home: MainScaffold(
+            key: _mainScaffoldKey,
+            themeMode: settings.themeMode,
+            onThemeToggle: () => settings.toggleTheme(),
+          ),
+        );
+      },
     );
   }
 }
@@ -74,14 +189,32 @@ class MainScaffold extends StatefulWidget {
   });
 
   @override
-  State<MainScaffold> createState() => _MainScaffoldState();
+  State<MainScaffold> createState() => MainScaffoldState();
 }
 
-class _MainScaffoldState extends State<MainScaffold>
+class MainScaffoldState extends State<MainScaffold>
     with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   String? _selectedHistoryWord;
   DateTime? _lastBackPressed;
+
+  void handleSharedWord(String word) {
+    setState(() {
+      _selectedHistoryWord = word;
+      _shouldFocusSearch = false; // prioritize actual word search
+      _currentIndex = 0;
+    });
+    _pageController.jumpToPage(0);
+  }
+
+  bool _shouldFocusSearch = false;
+  void focusSearch() {
+    setState(() {
+      _currentIndex = 0;
+      _shouldFocusSearch = true;
+    });
+    _pageController.jumpToPage(0);
+  }
 
   // GlobalKeys let us call methods across screens without rebuilding
   final GlobalKey<HistoryScreenState> _historyKey = GlobalKey();
@@ -176,10 +309,7 @@ class _MainScaffoldState extends State<MainScaffold>
               children: [
                 LookupScreen(
                   initialWord: _selectedHistoryWord,
-                  themeToggle: ThemeToggle(
-                    isDark: isDark,
-                    onToggle: widget.onThemeToggle,
-                  ),
+                  autoFocus: _shouldFocusSearch,
                   onHistoryUpdated: () {
                     _historyKey.currentState?.loadHistory();
                   },
@@ -215,6 +345,25 @@ class _MainScaffoldState extends State<MainScaffold>
                 ),
                 const TongueTwistersScreen(),
               ],
+            ),
+
+            // ── Top Bar ───────────────────────────────────────────────
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: TopBar(
+                title: [
+                  'LEXICON',
+                  'HISTORY',
+                  'MY LEXICON',
+                  'TWISTERS',
+                ][_currentIndex],
+                rightAction: ThemeToggle(
+                  isDark: isDark,
+                  onToggle: widget.onThemeToggle,
+                ),
+              ),
             ),
 
           // ── Floating pill navigation ──────────────────────────────

@@ -115,4 +115,25 @@ class AppTheme {
       showUnselectedLabels: false,
     ),
   );
+  // ── Colorblind-safe accents ─────────────────────────────────────
+  static const Color colorblindAccentColor = Color(0xFF007AFF); // Blue-ish
+  static const Color lightColorblindAccentColor = Color(0xFF004085);
+
+  static ThemeData getTheme(bool isDark, bool isColorblind, bool isDyslexia) {
+    final baseTheme = isDark ? darkTheme : lightTheme;
+    final accent = isColorblind 
+        ? (isDark ? colorblindAccentColor : lightColorblindAccentColor)
+        : (isDark ? accentColor : lightPrimaryText);
+
+    final textTheme = isDyslexia
+        ? GoogleFonts.atkinsonHyperlegibleTextTheme(baseTheme.textTheme)
+        : baseTheme.textTheme;
+
+    return baseTheme.copyWith(
+      colorScheme: baseTheme.colorScheme.copyWith(
+        primary: accent,
+      ),
+      textTheme: textTheme,
+    );
+  }
 }
